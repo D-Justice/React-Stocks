@@ -9,7 +9,9 @@ class MainContainer extends Component {
     this.state = {
       baseData: [],
       data: [],
-      portfolio: []
+      portfolio: [],
+      filter: 'All',
+      filteredData: []
     }
   }
 
@@ -58,10 +60,23 @@ class MainContainer extends Component {
       break;
     }
   }
-  filterStocks = (filter) => {
+  changeFilter = (input) => {
+    this.setState({filter: input})
+  }
+  filterStocks = () => {
     
-    let filteredData = this.state.data.filter(each => each.type === filter.target.value)
-    this.setState({data: filteredData})
+   if(this.state.filter === 'All') {
+     return this.state.data
+   } 
+   else {
+    let filteredData = this.state.data.filter(each => each.type === this.state.filter)
+    return filteredData
+    
+    
+    }
+    }
+  componentDidUpdate() {
+    
   }
   componentDidMount() {
     fetch(`http://localhost:3001/stocks`)
@@ -70,20 +85,20 @@ class MainContainer extends Component {
       baseData: data,
       data: data}))
   }
-  resetData = () => {
+  calcFilter = () => {
     
   }
 
   render() {
-   
+    let displayData = this.filterStocks()
     return (
       <div>
-        <SearchBar base={this.resetData} filter={this.filterStocks} sort={this.sortStocks}/>
+        <SearchBar base={this.resetData} filter={this.changeFilter} sort={this.sortStocks}/>
 
         <div className="row">
           <div className="col-8">
 
-            <StockContainer addToPortfolio={this.addToPortfolio} data={this.state.data} />
+            <StockContainer addToPortfolio={this.addToPortfolio} data={displayData} />
 
           </div>
           <div className="col-4">
